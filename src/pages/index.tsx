@@ -65,6 +65,16 @@ const AuthShowcase: React.FC = () => {
     undefined, // no input
     { enabled: sessionData?.user !== undefined },
   );
+  const { data: allUsers } = trpc.user.getAll.useQuery(
+    undefined, // no input
+    { enabled: sessionData?.user !== undefined },
+  );
+
+  const mutation = trpc.user.create.useMutation();
+
+  function addUser() {
+    mutation.mutate();
+  }
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
@@ -72,11 +82,27 @@ const AuthShowcase: React.FC = () => {
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
         {secretMessage && <span> - {secretMessage}</span>}
       </p>
+      <p className="text-center text-2xl text-white">
+        {sessionData && <span>Logged in with the email: {sessionData.user?.email} and id: {sessionData.user?.id}</span>}
+      </p>
+      {allUsers?.map((user) => {
+        return (
+          <p className="text-center text-2xl text-white">
+            <span>Logged in as {user.email}</span>
+          </p>
+        )
+      })}
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
         onClick={sessionData ? () => signOut() : () => signIn()}
       >
         {sessionData ? "Sign out" : "Sign in"}
+      </button>
+      <button
+        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+        onClick={() => addUser()}
+      >
+        {"Add User"}
       </button>
     </div>
   );
